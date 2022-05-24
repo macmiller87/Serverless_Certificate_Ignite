@@ -49,18 +49,34 @@ const serverlessConfiguration: AWS = {
         },
       ],
     },
+
+    verifyCertificate: {
+      handler: "src/functions/verifyCertificate.handler",
+      events: [
+        {
+          http: {
+            path: "verifyCertificate/{id}",
+            method: "get",
+            cors: true
+          },
+        },
+      ],
+    }
   },
-  package: { individually: true },
+
+  package: { individually: false, include: ["./src/templates/**"] },
+  
   custom: {
     esbuild: {
       bundle: true,
       minify: false,
       sourcemap: true,
-      exclude: ['aws-sdk', "chrome-aws-lambda"],
+      exclude: ['aws-sdk'],
       target: 'node14',
       define: { 'require.resolve': undefined },
       platform: 'node',
-      concurrency: 10
+      concurrency: 10,
+      external : ["chrome-aws-lambda"]
     },
     dynamodb: {
       stages: ["dev", "local"],
